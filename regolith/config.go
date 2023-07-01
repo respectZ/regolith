@@ -1,6 +1,8 @@
 package regolith
 
-import "github.com/Bedrock-OSS/go-burrito/burrito"
+import (
+	"github.com/Bedrock-OSS/go-burrito/burrito"
+)
 
 const StandardLibraryUrl = "github.com/Bedrock-OSS/regolith-filters"
 const ConfigFilePath = "config.json"
@@ -23,7 +25,8 @@ type ExportTarget struct {
 	BpPath    string `json:"bpPath,omitempty"` // Relative or absolute path to resource pack for "exact" export target
 	WorldName string `json:"worldName,omitempty"`
 	WorldPath string `json:"worldPath,omitempty"`
-	ReadOnly  bool   `json:"readOnly"` // Whether the exported files should be read-only
+	ForceCopy bool   `json:"forceCopy,omitempty"` // Whether the exported files should be copied instead of move
+	ReadOnly  bool   `json:"readOnly"`            // Whether the exported files should be read-only
 }
 
 // Packs is a part of "config.json" that points to the source behavior and
@@ -188,5 +191,8 @@ func ExportTargetFromObject(obj map[string]interface{}) (ExportTarget, error) {
 	// ReadOnly - can be empty
 	readOnly, _ := obj["readOnly"].(bool)
 	result.ReadOnly = readOnly
+	// ForceCopy - can be empty
+	forceCopy, _ := obj["forceCopy"].(bool)
+	result.ForceCopy = forceCopy
 	return result, nil
 }

@@ -232,13 +232,13 @@ func ExportProject(
 	}
 	// Export BP
 	Logger.Infof("Exporting behavior pack to \"%s\".", bpPath)
-	err = MoveOrCopy(filepath.Join(dotRegolithPath, "tmp/BP"), bpPath, exportTarget.ReadOnly, true)
+	err = MoveOrCopy(filepath.Join(dotRegolithPath, "tmp/BP"), bpPath, exportTarget.ReadOnly, true, exportTarget.ForceCopy)
 	if err != nil {
 		return burrito.WrapError(err, "Failed to export behavior pack.")
 	}
 	// Export RP
 	Logger.Infof("Exporting project to \"%s\".", filepath.Clean(rpPath))
-	err = MoveOrCopy(filepath.Join(dotRegolithPath, "tmp/RP"), rpPath, exportTarget.ReadOnly, true)
+	err = MoveOrCopy(filepath.Join(dotRegolithPath, "tmp/RP"), rpPath, exportTarget.ReadOnly, true, exportTarget.ForceCopy)
 	if err != nil {
 		return burrito.WrapError(err, "Failed to export resource pack.")
 	}

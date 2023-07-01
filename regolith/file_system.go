@@ -805,7 +805,7 @@ func move(source, destination string) error {
 // MoveOrCopy tries to move the source to destination first and in case
 // of failure it copies the files instead.
 func MoveOrCopy(
-	source string, destination string, makeReadOnly bool, copyParentAcl bool,
+	source string, destination string, makeReadOnly bool, copyParentAcl bool, forceCopy bool,
 ) error {
 	// Make destination parent if not exists
 	destinationParent := filepath.Dir(destination)
@@ -816,8 +816,15 @@ func MoveOrCopy(
 				err, osMkdirError, destinationParent)
 		}
 	}
-	// Move the source to the destination
-	if err := move(source, destination); err != nil {
+	if forceCopy {
+		Logger.Infof(
+			"Force copy is enabled. Copying file instead of moving.",
+		)
+		err := copy.Copy(source, destination)
+		if err != nil {
+			return burrito.WrapErrorf(err, osCopyError, source, destination)
+		}
+	} else if err := move(source, destination); err != nil { // Move the source to the destination
 		Logger.Debugf(
 			"Failed to move files.\n\tSource: %s\n\tTarget: %s\n"+
 				"Trying to copy files instead...",
