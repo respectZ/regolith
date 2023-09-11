@@ -320,6 +320,15 @@ func FilterInstallerFromObject(id string, obj map[string]interface{}) (FilterIns
 				"Unable to create exe filter from %q filter definition.", id)
 		}
 		return filter, nil
+	case "go":
+		// TODO
+		filter, err := GoFilterDefinitionFromObject(id, obj)
+		if err != nil {
+			return nil, burrito.WrapErrorf(
+				err,
+				"Unable to create Go filter from %q filter definition.", id)
+		}
+		return filter, nil
 	case "":
 		filter, err := RemoteFilterDefinitionFromObject(id, obj)
 		if err != nil {
