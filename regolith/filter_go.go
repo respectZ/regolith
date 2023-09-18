@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"github.com/Bedrock-OSS/go-burrito/burrito"
@@ -112,6 +113,30 @@ func (f *GoFilterDefinition) Check(context RunContext) error {
 func (f *GoFilterDefinition) InstallDependencies(
 	parent *RemoteFilterDefinition, dotRegolithPath string,
 ) error {
+	installLocation := ""
+	// Install dependencies
+	if parent != nil {
+		installLocation = parent.GetDownloadPath(dotRegolithPath)
+	}
+	Logger.Infof("Downloading dependencies for %s...", f.Id)
+	joinedPath := filepath.Join(installLocation, f.Script)
+	scriptPath, err := filepath.Abs(joinedPath)
+	if err != nil {
+		return burrito.WrapErrorf(err, filepathAbsError, joinedPath)
+	}
+
+	// Install the filter dependencies
+	filterPath := filepath.Dir(scriptPath)
+	err = RunSubProcess(
+		"go",
+		[]string{"mod", "download"},
+		filterPath,
+		"",
+		ShortFilterName(f.Id),
+	)
+	if err != nil {
+		return burrito.WrapErrorf(err, "Failed to download Go dependencies", f.Id)
+	}
 	return nil
 }
 
